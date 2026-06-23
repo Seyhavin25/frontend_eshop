@@ -9,7 +9,7 @@ import '../models/Address/req_address.dart'; // Add this import
 class APIProvider {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: 'http://192.168.1.230:8000',
+      baseUrl: 'http://192.168.1.215:8000',
       contentType: 'application/json',
       responseType: ResponseType.json,
       validateStatus: (status) => status! < 500,
@@ -221,20 +221,23 @@ class APIProvider {
     }
   }
   Future<Response> addToCard({required int qty, required int pro_id}) async {
-    try {
-      return await _dio.post(
-        "/api/address",
-        data: ,
+     try {
+       return await _dio.post(
+         "/api/address",
+         data: {
+           "quantity": 2,
+           "product_id": 1
+         },
 
-        options: Options(
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-          },
-        ),
-      );
-    } catch (e) {
-      rethrow;
-    }
-  }
+         options: Options(
+           headers: {
+             "Content-Type": "application/json",
+             "Accept": "application/json",
+           },
+         ),
+       );
+     } catch (e) {
+       rethrow;
+     }
+   }
 }

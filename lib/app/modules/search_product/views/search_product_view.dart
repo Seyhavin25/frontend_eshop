@@ -7,7 +7,7 @@ import '../controllers/search_product_controller.dart';
 
 class SearchProductView extends GetView<SearchProductController> {
   final searchController = TextEditingController();
-  final baseUrl = "http://192.168.1.230:8000/storage/";
+  final baseUrl = "http://192.168.1.215:8000/storage/";
 
   SearchProductView({super.key});
   @override
