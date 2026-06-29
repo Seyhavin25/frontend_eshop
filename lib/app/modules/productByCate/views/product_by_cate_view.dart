@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import '../controllers/product_by_cate_controller.dart';
 
 class ProductByCateView extends GetView<ProductByCateController> {
-  final baseUrl = "http://192.168.1.215:8000/storage/";
+  final baseUrl = "http://192.168.1.26:8000/storage/";
   const ProductByCateView({super.key});
   @override
   Widget build(BuildContext context) {

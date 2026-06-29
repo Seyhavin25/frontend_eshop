@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -6,7 +7,7 @@ import '../../../routes/app_pages.dart';
 import '../controllers/product_controller.dart';
 
 class ProductView extends GetView<ProductController> {
-  final baseUrl = "http://192.168.1.215:8000/storage/";
+  final baseUrl = "http://192.168.1.26:8000/storage/";
 
   const ProductView({super.key});
 
@@ -27,11 +28,31 @@ class ProductView extends GetView<ProductController> {
       ),
       body: Column(
         children: [
-          Container(
-            height: 200,
-            width: double.infinity,
-            color: Colors.grey[200],
-            child: const Center(child: Text("Advertisment ")),
+          Scrollbar(
+            child: CarouselSlider(
+              options: CarouselOptions(height: 200),
+              items: [
+                "images/commercial.jpg",
+                "images/IP16.jpg",
+                "images/17PROMAX.jpg",
+                "images/IPAD.webp",
+                "images/sony.jpg",
+            
+              ].map((path) {
+                return Builder(
+                  builder: (context) {
+                    return Container(
+                      width: MediaQuery.of(context).size.width,
+                      margin: EdgeInsets.symmetric(horizontal: 5),
+                      child: Image.asset(
+                        path,
+                        fit: BoxFit.cover,
+                      ),
+                    );
+                  },
+                );
+              }).toList(),
+            ),
           ),
           Expanded(
             child: Obx(() {
@@ -75,7 +96,7 @@ class ProductView extends GetView<ProductController> {
                         ),
                       ),
                       SizedBox(
-                        height: 250, // Increased height to prevent vertical overflow
+                        height: 250,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -145,7 +166,9 @@ class ProductView extends GetView<ProductController> {
                                         width: 32,
                                         child: IconButton(
                                           padding: EdgeInsets.zero,
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            controller.addProductToCart(pro.id!);
+                                          },
                                           icon: const Icon(
                                             Icons.add_shopping_cart,
                                             size: 20,

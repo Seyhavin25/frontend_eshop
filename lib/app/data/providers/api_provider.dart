@@ -3,30 +3,26 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:eshop/app/services/auth_service.dart';
 
-import '../../services/storage_service.dart';
-import '../models/Address/req_address.dart'; // Add this import
+import '../models/Address/req_address.dart';
 
 class APIProvider {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: 'http://192.168.1.215:8000',
+      baseUrl: 'http://192.168.1.26:8000',
       contentType: 'application/json',
       responseType: ResponseType.json,
       validateStatus: (status) => status! < 500,
     ),
   );
 
-  // Add constructor to setup interceptors
   APIProvider() {
     _setupInterceptors();
   }
 
-  // Setup interceptors to automatically add token to all requests
   void _setupInterceptors() {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          // Automatically add token to all requests
           String? token = await AuthService.getToken();
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
@@ -34,10 +30,8 @@ class APIProvider {
           return handler.next(options);
         },
         onError: (error, handler) async {
-          // Handle 401 Unauthenticated errors
           if (error.response?.statusCode == 401) {
             await AuthService.removeToken();
-            // Optional: Navigate to login screen
           }
           return handler.next(error);
         },
@@ -61,7 +55,6 @@ class APIProvider {
         ),
       );
 
-      // Save token after successful login
       if (response.statusCode == 200 && response.data['token'] != null) {
         await AuthService.saveToken(response.data['token']);
       }
@@ -117,13 +110,12 @@ class APIProvider {
         data: _formData,
         options: Options(
           headers: {
-            "Content-Type": "multipart/form-data", // Changed for file upload
+            "Content-Type": "multipart/form-data",
             "Accept": "application/json",
           },
         ),
       );
 
-      // Save token after successful signup (if your API returns a token)
       if (response.statusCode == 200 && response.data['token'] != null) {
         await AuthService.saveToken(response.data['token']);
       }
@@ -136,7 +128,6 @@ class APIProvider {
 
   Future<Response> getProduct() async {
     try {
-      // Token is automatically added by the interceptor
       return await _dio.get(
         "/api/products",
         options: Options(
@@ -152,7 +143,6 @@ class APIProvider {
   }
   Future<Response> getProductByCate(int cateId) async {
     try {
-      // Token is automatically added by the interceptor
       return await _dio.get(
         "/api/products/$cateId",
         options: Options(
@@ -168,7 +158,6 @@ class APIProvider {
   }
   Future<Response> searchProduct(String keyword) async {
     try {
-      // Token is automatically added by the interceptor
       return await _dio.get(
         "/api/products/search",
         queryParameters: {
@@ -188,7 +177,6 @@ class APIProvider {
 
   Future<Response> getAddress() async {
     try {
-      // Token is automatically added by the interceptor
       return await _dio.get(
         "/api/address",
 
@@ -220,19 +208,20 @@ class APIProvider {
       rethrow;
     }
   }
-  Future<Response> addToCard({required int qty, required int pro_id}) async {
+  Future<Response> addToCard({required int qty, required int proId}) async {
      try {
        return await _dio.post(
-         "/api/address",
+         "/api/cart",
          data: {
-           "quantity": 2,
-           "product_id": 1
+           "quantity": qty,
+           "product_id": proId
          },
 
          options: Options(
            headers: {
              "Content-Type": "application/json",
              "Accept": "application/json",
+
            },
          ),
        );
@@ -240,4 +229,26 @@ class APIProvider {
        rethrow;
      }
    }
+  Future<Response> getCart() async {
+    try {
+      return await _dio.get(
+        "/api/cart/view",
+        options: Options(
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+
+          },
+        ),
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+  Future<Response> updateCartItemQuantity({required int itemId, required int quantity}) async {
+    return await _dio.patch(
+      "/api/cart/item/$itemId",
+      data: {"quantity": quantity},
+    );
+  }
 }
